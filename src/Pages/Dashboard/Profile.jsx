@@ -55,13 +55,13 @@ const Profile = () => {
       >
         {/* profile Image  */}
         <div className="flex justify-center items-center  relative">
-          <button
+          {/* <button
             className="absolute top-5 right-[16%] "
             onClick={() => setOpenAddModel(true)}
           >
             {" "}
             <FaEdit size={24} />
-          </button>
+          </button> */}
 
           <div
             style={{
