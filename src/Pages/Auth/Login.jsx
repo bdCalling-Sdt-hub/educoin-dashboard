@@ -3,11 +3,12 @@ import { Button, Checkbox, Form, Input } from "antd";
 import React from "react";
 import { useNavigate } from "react-router";
 const Login = () => {
+  const navigate = useNavigate();
+
   const onFinish = (values) => {
     console.log("Received values of form: ", values);
+    navigate("/");
   };
-
-  const navigate = useNavigate();
 
   return (
     <div
