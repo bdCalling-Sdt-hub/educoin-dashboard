@@ -1,24 +1,28 @@
 import { Button, Form, Input, Typography } from "antd";
 import React from "react";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
+import { useForgotPasswordMutation } from "../../redux/slices/authSlice";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
-  const onFinish = (values) => {
-    localStorage.setItem("email", JSON.stringify(values.email));
-    console.log("Received values of form: ", values.email);
-    Swal.fire({
-      position: "center",
-      icon: "success",
-      title: "Send OTP ",
-      color: "#1A4F73",
-      showConfirmButton: false,
-      timer: 1500,
-    }).then(() => {
-      navigate("/otp");
-    });
+  const [forgotPassword, {isLoading}] = useForgotPasswordMutation()
+
+  const onFinish = async (values) => {
+    try {
+        await forgotPassword({ email: values?.email  }).unwrap().then((result)=>{
+            if (result?.success) {
+                toast.success(result.message);
+                navigate(`/otp/${values.email}`);
+            }
+        });
+        
+    } catch (error) {
+        toast.error(error.data.message || "An unexpected server error occurred");
+    }
   };
+
+
   return (
     <div
       style={{
@@ -104,7 +108,7 @@ const ForgotPassword = () => {
               marginTop: "30px",
             }}
           >
-            Send a Code
+            {isLoading? "Loading": "Send a Code"}
           </Button>
         </Form.Item>
       </Form>

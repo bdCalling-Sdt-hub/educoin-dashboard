@@ -1,25 +1,17 @@
 import { Input, Layout, Badge } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import Logo from "../../assets/logo.png";
 import LogoText from "../../assets/logo-text.png";
-import { HiLogout, HiOutlineMail } from "react-icons/hi";
-import { LuUser } from "react-icons/lu";
-import { TbUserPlus } from "react-icons/tb";
-import { MdDashboard, MdPlaylistAdd } from "react-icons/md";
-import { FiSearch } from "react-icons/fi";
-import { IoClose } from "react-icons/io5";
-import {
-  RiNotification2Line,
-  RiChat1Line,
-  RiCopperDiamondLine,
-} from "react-icons/ri";
+import { HiLogout } from "react-icons/hi";
+import { IoMdInformationCircleOutline } from "react-icons/io";
+import { MdDashboard, MdOutlinePrivacyTip } from "react-icons/md";
 const { Header, Sider, Content } = Layout;
-import { IoSettingsOutline } from "react-icons/io5";
-import { MdKeyboardArrowRight } from "react-icons/md";
-import { MdKeyboardArrowDown } from "react-icons/md";
 import { FaChalkboardTeacher } from "react-icons/fa";
 import { PiStudentFill } from "react-icons/pi";
+import { useUser } from "../../provider/user";
+import { imageUrl } from "../../redux/api/baseApi";
+import { MdCategory } from "react-icons/md";
 
 const Dashboard = () => {
   const [dropdown, setDropdown] = useState(false);
@@ -27,8 +19,8 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   const handleLogOut = () => {
+    localStorage.removeItem("token")
     navigate("/login");
-    window.location.reload();
   };
 
   const linkItems = [
@@ -48,21 +40,23 @@ const Dashboard = () => {
       icon: <PiStudentFill size={24} />,
     },
     {
-      title: "Add Category",
-      path: "/add-category",
-      icon: <MdPlaylistAdd size={24} />,
+      title: "Presets",
+      path: "/preset",
+      icon: < MdCategory size={24} />,
     },
-    // {
-    //   title: "Email",
-    //   path: "/emails",
-    //   icon: <HiOutlineMail size={24} />,
-    // },
-    // {
-    //   title: "Pricing",
-    //   path: "/package",
-    //   icon: <RiCopperDiamondLine size={24} />,
-    // },
+    {
+      title: "Privacy & Policy",
+      path: "/privacy",
+      icon: <MdOutlinePrivacyTip size={24} />,
+    },
+    {
+      title: "Terms & Condition",
+      path: "/terms",
+      icon: <IoMdInformationCircleOutline size={24} />,
+    },
   ];
+
+  const {user} = useUser();
 
   return (
     <Layout style={{ height: "100vh", width: "100vw" }}>
@@ -104,9 +98,7 @@ const Dashboard = () => {
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: "30px",
             height: "100%",
-            marginTop: 0,
           }}
         >
           {linkItems.map((item, index) => (
@@ -116,10 +108,10 @@ const Dashboard = () => {
                 width: "100%",
                 height: "34px",
                 position: "relative",
-                paddingLeft: "44px",
+                paddingLeft: "22px",
                 display: "flex",
                 alignItems: "center",
-                marginBottom: "20px",
+                marginBottom: 15,
               }}
             >
               {item.path === pathname ? (
@@ -167,112 +159,6 @@ const Dashboard = () => {
           <li
             style={{
               width: "100%",
-              marginTop: 0,
-              height: "38px",
-              display: "flex",
-              alignItems: "center",
-              paddingLeft: "47px",
-              position: "relative",
-              gap: "14px",
-              color: "white",
-              cursor: "pointer",
-            }}
-          >
-            {pathname === "/setting-change-password" ||
-            pathname === "/settings-profile" ? (
-              <div
-                style={{
-                  backgroundColor: "#236999",
-                  position: "absolute",
-                  left: 0,
-                  top: 0,
-                  width: "8px",
-                  height: "38px",
-                  borderRadius: "0 10px 10px 0",
-                }}
-              ></div>
-            ) : null}
-            <IoSettingsOutline size={24} />
-            <p
-              onClick={() => setDropdown(!dropdown)}
-              style={{ fontSize: "15px", textAlign: "center" }}
-            >
-              Settings
-            </p>
-            {dropdown ? (
-              <MdKeyboardArrowDown size={24} />
-            ) : (
-              <MdKeyboardArrowRight size={24} />
-            )}
-            {dropdown && (
-              <div
-                style={{
-                  position: "absolute",
-                  left: "60px",
-                  top: "40px",
-                  width: "150px",
-                  height: "50px",
-                  borderRadius: "0 10px 10px 0",
-                }}
-              >
-                <Link
-                  to="/settings-profile"
-                  style={{
-                    display: "flex",
-                    width: "100%",
-                    backgroundColor:
-                      pathname === "/settings-profile"
-                        ? "#236999"
-                        : "transparent",
-                    color: "white",
-
-                    margin: "auto  0 auto 0",
-
-                    padding: "7px 14px 7px",
-                    borderRadius: "5px",
-                  }}
-                >
-                  <p style={{ marginBottom: "8px" }}>Profile</p>
-                </Link>
-
-                <Link
-                  to="/privacyPolicy"
-                  style={{
-                    display: "flex",
-                    width: "100%",
-                    backgroundColor:
-                      pathname === "/privacyPolicy" ? "#236999" : "transparent",
-                    color: "white",
-
-                    margin: "auto  0 auto 0",
-
-                    padding: "7px 14px 7px",
-                    borderRadius: "5px",
-                  }}
-                >
-                  <p>Privacy Policy</p>
-                </Link>
-
-                <Link
-                  to="/terms"
-                  style={{
-                    width: "100%",
-
-                    color: "white",
-                    margin: "auto  0 auto 0",
-                    borderRadius: "5px",
-                    padding: "7px 14px 7px",
-                  }}
-                >
-                  <p>Terms & Condition</p>
-                </Link>
-              </div>
-            )}
-          </li>
-
-          <li
-            style={{
-              width: "100%",
               left: "0",
               position: "absolute",
               bottom: "53px",
@@ -315,21 +201,12 @@ const Dashboard = () => {
               style={{
                 position: "absolute",
                 right: "0px",
-                // width: "280px",
-                display: "flex",
                 alignItems: "center",
                 textAlign: "left",
-                gap: "26px",
                 paddingTop: "20px",
               }}
             >
-              <Badge color="#C30303" count={5}>
-                <Link to="/notification">
-                  <RiNotification2Line color="#6A6A6A" size={24} />
-                </Link>
-              </Badge>
-
-              <Link to="/settings-profile">
+              <Link to="/profile">
                 <div
                   style={{
                     width: "170px",
@@ -338,12 +215,12 @@ const Dashboard = () => {
                     borderRadius: "5px",
                     display: "flex",
                     alignItems: "center",
-                    gap: "20px",
+                    gap: "10px",
                     padding: "10px",
                   }}
                 >
                   <img
-                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLotvhr2isTRMEzzT30Cj0ly77jFThGXr0ng&usqp=CAU"
+                    src={ user?.profile?.startsWith("https") ?  user?.profile :  `${imageUrl}${user?.profile}`}
                     style={{
                       width: "30px",
                       height: "30px",
@@ -352,7 +229,7 @@ const Dashboard = () => {
                     alt=""
                   />
                   <h2 style={{ color: "black", fontSize: "12px" }}>
-                    DR. Jim ahhmed
+                    {user?.name}
                   </h2>
                 </div>
               </Link>

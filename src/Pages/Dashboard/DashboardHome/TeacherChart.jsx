@@ -9,8 +9,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const TotalSellerChart = ({data}) => {
-
+export default function TeacherChart({data}) {
   return (
     <div>
 
@@ -19,7 +18,7 @@ const TotalSellerChart = ({data}) => {
           width={500}
           height={200}
           data={data}
-          syncId="anyId"
+          // syncId="anyId"
           margin={{
             top: 10,
             right: 30,
@@ -29,13 +28,11 @@ const TotalSellerChart = ({data}) => {
         >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" />
-          <YAxis dataKey="student" />
+          <YAxis dataKey="teacher" />
           <Tooltip />
-          <Area type="monotone" dataKey="student" stroke="#1A4F73" fill="#FF8811" />
+          <Area type="monotone" dataKey="teacher" stroke="#1A4F73" fill="#d0daf0" />
         </AreaChart>
       </ResponsiveContainer>
     </div>
   );
-};
-
-export default TotalSellerChart;
+}

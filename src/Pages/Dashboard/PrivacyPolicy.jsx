@@ -1,18 +1,34 @@
 import JoditEditor from "jodit-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRef } from "react";
+import { useGetPrivacyQuery, useUpdatePrivacyMutation } from "../../redux/slices/ruleSlice";
+import toast from "react-hot-toast";
 
 const PrivacyPolicy = () => {
   const editor = useRef(null);
   const [content, setContent] = useState("");
-  const [isLoading, seLoading] = useState(false);
-  const config = {
-    readonly: false,
-    placeholder: "Start typings...",
-    style: {
-      height: 400,
-    },
+  const {data: privacy} = useGetPrivacyQuery({})
+  const [updatePrivacy] = useUpdatePrivacyMutation()
+
+  useEffect(() => {
+    setContent(privacy?.data?.content);
+  }, [privacy?.data?.content]);
+
+
+  const handleSubmit = async () => {
+    try {
+      await updatePrivacy({ content: content }).unwrap().then((result)=>{
+          if (result?.success == true) {
+              toast.success(result?.message);
+          }
+      });
+      
+    } catch (error) {
+        toast.error(error.data.message || "An unexpected server error occurred");
+    }
   };
+
+
   return (
     <div
       style={{
@@ -39,15 +55,12 @@ const PrivacyPolicy = () => {
         <JoditEditor
           ref={editor}
           value={content}
-          config={config}
-          tabIndex={1}
           onBlur={(newContent) => setContent(newContent)}
-          // onChange={newContent => { }}
         />
       </div>
       <button
-        disabled={isLoading}
         className="rounded-lg"
+        onClick={handleSubmit}
         style={{
           display: "block",
           padding: "12px 24px",

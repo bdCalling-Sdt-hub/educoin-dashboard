@@ -1,13 +1,29 @@
-import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import { Button, Checkbox, Form, Input } from "antd";
 import React from "react";
 import { useNavigate } from "react-router";
+import { useLoginMutation } from "../../redux/slices/authSlice";
+import toast from "react-hot-toast";
 const Login = () => {
+  const [form] = Form.useForm();
   const navigate = useNavigate();
+  const [login, {isSuccess}] = useLoginMutation();
+  form.setFieldsValue();
 
-  const onFinish = (values) => {
-    console.log("Received values of form: ", values);
-    navigate("/");
+  
+
+  const onFinish = async (values) => {
+    try {
+        await login(values).unwrap().then((result)=>{
+            if (result?.success == true) {
+                localStorage.setItem("token",  JSON.stringify(result?.data))
+                toast.success(result?.message);
+                navigate("/");
+            }
+        });
+        
+    } catch (error) {
+        toast.error(error.data.message || "An unexpected server error occurred");
+    }
   };
 
   return (
@@ -152,7 +168,7 @@ const Login = () => {
               marginTop: "56px",
             }}
           >
-            Sign In
+            {isSuccess? "Loading": "Login"}
           </Button>
         </Form.Item>
       </Form>

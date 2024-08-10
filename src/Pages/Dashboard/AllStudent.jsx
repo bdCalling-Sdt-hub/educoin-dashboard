@@ -1,206 +1,17 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import BackButton from "./BackButton";
-
-import { FiEye, FiSearch } from "react-icons/fi";
+import { FiSearch } from "react-icons/fi";
 import { IoClose } from "react-icons/io5";
-import { Calendar, Dropdown, Input, Modal, Slider, Table } from "antd";
+import { Input, Modal, Table } from "antd";
 import student from "../../assets/student1.png";
 import { FaRegEye } from "react-icons/fa";
 import { AiFillEdit } from "react-icons/ai";
 import { MdDeleteOutline } from "react-icons/md";
 import StudentModal from "../../Components/AllStudent/StudentModal";
-import { render } from "react-dom";
 import Swal from "sweetalert2";
-// import TeacherModal from "../../Components/TotalTeacher/TeacherModal";
-
-const data = [
-  {
-    key: "1",
-    name: "Tushar",
-    email: "tushar@gmail.com",
-    photo: student,
-    location: "17/5 Maniknagar ,Dhaka",
-    contact: "01812038436999",
-    code: "435425",
-    totalStudent: "200",
-  },
-  {
-    key: "2",
-    name: "Rahman",
-    email: "rahman@gmail.com",
-    photo: student,
-    location: "17/5 Maniknagar ,Dhaka",
-
-    contact: "01812038436999",
-    code: "435425",
-    totalStudent: "200",
-  },
-  {
-    key: "3",
-    name: "Rafsan",
-    email: "rafsan@gmail.com",
-    photo: student,
-    location: "17/5 Maniknagar ,Dhaka",
-
-    contact: "01812038436999",
-    code: "435425",
-    totalStudent: "200",
-  },
-  {
-    key: "4",
-    name: "jusef",
-    email: "jusef@gmail.com",
-    photo: student,
-    location: "17/5 Maniknagar ,Dhaka",
-
-    contact: "01812038436999",
-    code: "435425",
-    totalStudent: "200",
-  },
-  {
-    key: "5",
-    name: "Asad",
-    email: "asad@gmail.com",
-    photo: student,
-    location: "17/5 Maniknagar ,Dhaka",
-
-    contact: "01812038436999",
-    code: "435425",
-    totalStudent: "200",
-  },
-  {
-    key: "6",
-    name: "Fahim",
-    email: "fahim@gmail.com",
-    photo: student,
-    location: "17/5 Maniknagar ,Dhaka",
-
-    contact: "01812038436999",
-    code: "435425",
-    totalStudent: "200",
-  },
-  {
-    key: "7",
-    name: "Nadir",
-    email: "nadir@gmail.com",
-    photo: student,
-    location: "17/5 Maniknagar ,Dhaka",
-
-    contact: "01812038436999",
-    code: "435425",
-    totalStudent: "200",
-  },
-  {
-    key: "8",
-    name: "Tushar",
-    email: "tushar@gmail.com",
-    photo: student,
-    location: "17/5 Maniknagar ,Dhaka",
-
-    contact: "01812038436999",
-    code: "435425",
-    totalStudent: "200",
-  },
-  {
-    key: "9",
-    name: "Rahman",
-    email: "rahman@gmail.com",
-    photo: student,
-    location: "17/5 Maniknagar ,Dhaka",
-
-    contact: "01812038436999",
-    code: "435425",
-    totalStudent: "200",
-  },
-  {
-    key: "10",
-    name: "Rafsan",
-    email: "rafsan@gmail.com",
-    photo: student,
-    location: "17/5 Maniknagar ,Dhaka",
-
-    contact: "01812038436999",
-    code: "435425",
-    totalStudent: "200",
-  },
-  {
-    key: "11",
-    name: "jusef",
-    email: "jusef@gmail.com",
-    photo: student,
-    location: "17/5 Maniknagar ,Dhaka",
-
-    contact: "01812038436999",
-    code: "435425",
-    totalStudent: "200",
-  },
-  {
-    key: "12",
-    name: "Asad",
-    email: "asad@gmail.com",
-    photo: student,
-    location: "17/5 Maniknagar ,Dhaka",
-
-    contact: "01812038436999",
-    code: "435425",
-    totalStudent: "200",
-  },
-  {
-    key: "13",
-    name: "Fahim",
-    email: "fahim@gmail.com",
-    photo: student,
-    location: "17/5 Maniknagar ,Dhaka",
-
-    contact: "01812038436999",
-    code: "435425",
-    totalStudent: "200",
-  },
-  {
-    key: "14",
-    name: "Nadir",
-    email: "nadir@gmail.com",
-    photo: student,
-    location: "17/5 Maniknagar ,Dhaka",
-
-    contact: "01812038436999",
-    code: "435425",
-    totalStudent: "200",
-  },
-  {
-    key: "15",
-    name: "Asad",
-    email: "asad@gmail.com",
-    photo: student,
-    location: "17/5 Maniknagar ,Dhaka",
-
-    contact: "01812038436999",
-    code: "435425",
-    totalStudent: "200",
-  },
-  {
-    key: "16",
-    name: "Fahim",
-    email: "fahim@gmail.com",
-    photo: student,
-    location: "17/5 Maniknagar ,Dhaka",
-
-    contact: "01812038436999",
-    code: "435425",
-    totalStudent: "200",
-  },
-  {
-    key: "17",
-    name: "Nadir",
-    email: "nadir@gmail.com",
-    photo: student,
-    location: "17/5 Maniknagar ,Dhaka",
-
-    contact: "01812038436999",
-    code: "435425",
-    totalStudent: "200",
-  },
-];
+import { useStudentsQuery } from "../../redux/slices/studentSlice";
+import { imageUrl } from "../../redux/api/baseApi";
+import moment from "moment";
 
 const AllStudent = () => {
   const [openAddModel, setOpenAddModel] = useState(false);
@@ -210,33 +21,12 @@ const AllStudent = () => {
   const [page, setPage] = useState(
     new URLSearchParams(window.location.search).get("page") || 1
   );
+  const itemsPerPage = 10; 
+  const {data: students} = useStudentsQuery({page: page, search: search})
 
   const handleActionModal = (value) => {
-    console.log(value);
     setOpenActionModel(true);
     setActionValue(value);
-  };
-
-  const handleDelete = (id) => {
-    Swal.fire({
-      title: "Are you sure?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes",
-      cancelButtonText: "No",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire({
-          title: "Deleted!",
-          text: "Your file has been deleted.",
-          icon: "success",
-          showConfirmButton: false,
-          timer: 1500,
-        });
-      }
-    });
   };
 
   const columns = [
@@ -244,34 +34,35 @@ const AllStudent = () => {
       title: "S.No",
       dataIndex: "key",
       key: "key",
+      render: (_, record, index)=><p>{((page - 1) * itemsPerPage) + index + 1}</p>
     },
     {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
+      title: "Student",
+      dataIndex: "student",
+      key: "student",
       render: (_, record) => (
-        <div className="flex items-center gap-1">
-          {" "}
-          <img src={record?.photo} alt={record?.photo} />{" "}
+        <div className="flex items-center gap-2">
+          <img style={{width: 40, height: 40, borderRadius: 4}} src={`${imageUrl}${record?.profile}`} alt={record?.profile} />
           <p> {record?.name} </p>
         </div>
-      ),
-    },
-    {
-      title: "Email",
-      dataIndex: "email",
-      key: "email",
+      )
     },
 
     {
-      title: "Contact Number ",
-      dataIndex: "contact",
-      key: "contact",
+      title: "Class",
+      dataIndex: "class",
+      key: "class",
     },
     {
-      title: "Code",
-      dataIndex: "code",
-      key: "code",
+      title: "Level",
+      dataIndex: "level",
+      key: "level",
+    },
+    {
+      title: "Date of Birth",
+      dataIndex: "dateOfBirth",
+      key: "dateOfBirth",
+      render: (_, record)=> <p>{moment(record?.dateOfBirth).format("l")}</p>
     },
 
     ,
@@ -279,31 +70,13 @@ const AllStudent = () => {
       title: "Action",
       dataIndex: "action",
       key: "action",
-      render: (_, record) => (
-        <div className="w-full">
-          {" "}
-          <div className=" flex gap-2 p-2 px-3 border border-[#1A4F73] rounded-xl items-center w-1/2  text-[#1A4F73] ">
-            <button>
-              <FaRegEye
-                size={22}
-                onClick={() => {
-                  handleActionModal(record);
-                }}
-              />
-            </button>
-            <button onClick={() => setOpenAddModel(true)}>
-              <AiFillEdit size={22} />
-            </button>
-            <button>
-              {" "}
-              <MdDeleteOutline
-                size={22}
-                onClick={() => handleDelete(record?.key)}
-              />{" "}
-            </button>
-          </div>
-        </div>
-      ),
+      render: (_, record) => <FaRegEye
+      size={22}
+      className="cursor-pointer"
+      onClick={() => {
+        handleActionModal(record);
+      }}
+    />,
     },
   ];
 
@@ -316,13 +89,10 @@ const AllStudent = () => {
 
   return (
     <div>
-      <div style={{ marginBottom: "16px" }}>
-        <BackButton link="/" />
-      </div>
       <div
         style={{
           background: "white",
-          padding: "20px",
+          padding: "20px ",
           borderRadius: "12px",
         }}
       >
@@ -378,44 +148,45 @@ const AllStudent = () => {
         <div>
           <Table
             columns={columns}
-            dataSource={data}
+            dataSource={students?.data}
             pagination={{
-              pageSize: 10,
+              total: students?.pagination?.total,
               defaultCurrent: parseInt(page),
               onChange: handlePageChange,
             }}
           />
         </div>
         <Modal
-          title="Basic Modal"
+          title="Student Details"
           open={openActionModel}
           onCancel={() => setOpenActionModel(false)}
           footer={false}
         >
           <div className=" text-center leading-9">
-            <div className="flex justify-center items-center">
-              <img src={actionValue?.photo} height={40} width={100} alt="" />
+            <div className="flex justify-center items-center mb-4">
+              <img src={`${imageUrl}${actionValue?.profile}`} height={40} width={100} alt="" />
             </div>
 
-            <p>
-              <span className="font-semibold">Name :</span>{" "}
-              <span>{actionValue?.name}</span>
+            <p className="flex items-center">
+              <span className="font-semibold w-[50%] text-left">Name</span>
+              <span className="font-semibold ">:</span>
+              <span className="ml-6">{actionValue?.name}</span>
             </p>
-            <p>
-              <span className="font-semibold">Code :</span>{" "}
-              <span>{actionValue?.code}</span>
+            <p className="flex items-center">
+              <span className="font-semibold w-[50%] text-left">Class</span>
+              <span className="font-semibold">:</span>
+              <span className="ml-6">{actionValue?.class}</span>
             </p>
-            <p>
-              <span className="font-semibold">Email :</span>{" "}
-              <span>{actionValue?.email}</span>
+            <p className="flex items-center">
+
+              <span className="font-semibold w-[50%] text-left">Level</span>
+              <span className="font-semibold">:</span>
+              <span className="ml-6">{actionValue?.level}</span>
             </p>
-            <p>
-              <span className="font-semibold">Location :</span>{" "}
-              <span>{actionValue?.location}</span>
-            </p>
-            <p>
-              <span className="font-semibold">Contact Number :</span>{" "}
-              <span>{actionValue?.contact}</span>
+            <p className="flex items-center">
+              <span className="font-semibold w-[50%] text-left">Date of Birth</span>
+              <span className="font-semibold">:</span>
+              <span className="ml-6">{moment(actionValue?.dateOfBirth).format("l")}</span>
             </p>
           </div>
         </Modal>

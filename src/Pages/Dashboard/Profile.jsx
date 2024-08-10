@@ -1,48 +1,65 @@
-import React, { useState } from "react";
-import BackButton from "./BackButton";
+import React, { useEffect, useState } from "react";
 import { Form, Input, Button } from "antd";
 import { MdOutlineAddPhotoAlternate } from "react-icons/md";
-import Swal from "sweetalert2";
-import { FaEdit } from "react-icons/fa";
 import ProfileModal from "../../Components/Profile/ProfileModal";
+import { useProfileQuery, useUpdateProfileMutation } from "../../redux/slices/authSlice";
+import { imageUrl } from "../../redux/api/baseApi";
+import toast from "react-hot-toast";
 
 const Profile = () => {
   const [openAddModel, setOpenAddModel] = useState(false);
-  const [image, setImage] = useState(
-    "https://avatars.design/wp-content/uploads/2021/02/corporate-avatars-TN-1.jpg"
-  );
-  const [imgURL, setImgURL] = useState(image);
-  const handleSubmit = (values) => {
-    console.log(values);
-    Swal.fire({
-      position: "center",
-      icon: "success",
-      title: "Updated Successfully",
-      showConfirmButton: false,
-      timer: 1500,
-    });
+  const [image, setImage] = useState();
+  const [imgURL, setImgURL] = useState();
+  const [form] = Form.useForm();
+
+  const { data: profile, refetch } = useProfileQuery({});
+  const [updateProfile, {isLoading}] = useUpdateProfileMutation();
+
+  useEffect(()=>{
+    if(profile){
+      form.setFieldsValue(profile)
+      setImgURL(profile?.profile.startsWith("https") ? profile?.profile: `${imageUrl}${profile?.profile}`)
+    }
+  }, [profile, form])
+
+  const handleSubmit = async(values) => {
+    const formData = new FormData();
+
+    Object.keys(values).forEach((key)=>{
+      formData.append(key, values[key])
+    })
+
+    if(image){
+      formData.append("image", image)
+    }
+
+    try {
+      await updateProfile(formData).unwrap().then((result)=>{
+          if (result?.success == true) {
+              toast.success(result?.message);
+              refetch()
+          }
+      });
+    } catch (error) {
+      toast.error(error.data.message || "An unexpected server error occurred");
+    }
   };
+
+
   const handleReset = () => {
     window.location.reload();
   };
+
+
   const onChange = (e) => {
     const file = e.target.files[0];
     const imgUrl = URL.createObjectURL(file);
     setImgURL(imgUrl);
     setImage(file);
   };
-  const initialFormValues = {
-    fullName: "Nadir Hossain",
-    email: "nadirhossain336@gmail.com",
-    mobile_number: "01756953936",
-    location: "312 3rd St. Albany, New York 12206, USA",
-  };
 
   return (
-    <div style={{}}>
-      <div style={{ margin: "10px 0" }}>
-        <BackButton link="/" />
-      </div>
+    <div>
 
       <div
         style={{
@@ -132,16 +149,16 @@ const Profile = () => {
           <Form
             name="normal_login"
             className="login-form"
-            initialValues={initialFormValues}
             style={{ width: "70%", height: "fit-content" }}
             onFinish={handleSubmit}
+            form={form}
           >
             <div className=" grid grid-cols-2 gap-5 ">
               <div style={{ marginBottom: "10px" }}>
                 <label style={{ display: "block", marginBottom: "5px" }}>
                   Full Name
                 </label>
-                <Form.Item style={{ marginBottom: 0 }} name="fullName">
+                <Form.Item style={{ marginBottom: 0 }} name="name">
                   <Input
                     placeholder="Enter Your Full Name"
                     type="text"
@@ -186,7 +203,7 @@ const Profile = () => {
                 >
                   Phone Number
                 </label>
-                <Form.Item style={{ marginBottom: 0 }} name="mobile_number">
+                <Form.Item style={{ marginBottom: 0 }} name="contact">
                   <Input
                     type="number"
                     placeholder="Enter Phone Number"
@@ -201,29 +218,7 @@ const Profile = () => {
                 </Form.Item>
               </div>
 
-              <div style={{ marginBottom: "10px" }}>
-                <label
-                  style={{ display: "block", marginBottom: "5px" }}
-                  htmlFor="email"
-                >
-                  Birth Of Date
-                </label>
-                <Form.Item style={{ marginBottom: 0 }} name="birthDate">
-                  <Input
-                    type="date"
-                    //   placeholder="Enter Phone Number"
-                    style={{
-                      border: "1px solid #E0E4EC",
-                      height: "52px",
-                      background: "white",
-                      borderRadius: "8px",
-                      outline: "none",
-                    }}
-                  />
-                </Form.Item>
-              </div>
-            </div>
-            <div style={{ marginBottom: "40px" }}>
+              <div style={{ marginBottom: "40px" }}>
               <label style={{ display: "block", marginBottom: "5px" }}>
                 Location
               </label>
@@ -241,6 +236,8 @@ const Profile = () => {
                 />
               </Form.Item>
             </div>
+            </div>
+            
 
             <div style={{}} className=" text-end ">
               <Form.Item>
@@ -258,7 +255,7 @@ const Profile = () => {
                     outline: "none",
                   }}
                 >
-                  UPDATE
+                  { isLoading? "Updating..." : "UPDATE" }
                 </Button>
               </Form.Item>
             </div>

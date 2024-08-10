@@ -2,25 +2,24 @@ import { Col, Row } from "antd";
 import React from "react";
 import "./DashboardHome.css";
 import TotalSellerChart from "./TotalSellerChart";
-import DailyOverviewChart from "./DailyOverviewChart";
+import TeacherChart from "./TeacherChart";
 import teacher from "../../../assets/teacher.png";
 import student from "../../../assets/student.png";
+import { useOverviewQuery } from "../../../redux/slices/homeSlice";
 
 function DashboardHome() {
-  const onChange = (pageNumber) => {
-    console.log("Page: ", pageNumber);
-  };
+  const {data: overview} = useOverviewQuery({});
 
   const data = [
     {
       name: "Total Teacher",
-      count: "120",
+      count: overview?.data?.totalTeacher,
       icon: <img src={teacher} alt="" />,
       bgColor: "#E2F7FC",
     },
     {
       name: "Total Student",
-      count: "320",
+      count: overview?.data?.totalStudent,
       icon: <img src={student} alt="" />,
       bgColor: "#FFE3C7",
     },
@@ -28,7 +27,7 @@ function DashboardHome() {
 
   return (
     <div>
-      <Row gutter={25} className="bg-white rounded-xl">
+      <Row gutter={24} className="bg-white rounded-xl">
         {data.map((item, index) => (
           <Col
             key={index}
@@ -93,7 +92,7 @@ function DashboardHome() {
             backgroundColor: "#fff",
           }}
         >
-          <DailyOverviewChart />
+          <TeacherChart data={overview?.data?.teacherGrowth}   />
         </div>
 
         <div
@@ -104,7 +103,7 @@ function DashboardHome() {
             padding: "10px 20px 20px 20px",
           }}
         >
-          <TotalSellerChart />
+          <TotalSellerChart data={overview?.data?.studentGrowth}  />
         </div>
       </div>
     </div>

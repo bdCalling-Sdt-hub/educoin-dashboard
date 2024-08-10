@@ -5,161 +5,23 @@ import { FiEye, FiSearch } from "react-icons/fi";
 import { IoClose } from "react-icons/io5";
 import { Calendar, Dropdown, Input, Slider, Table } from "antd";
 import TeacherModal from "../../Components/TotalTeacher/TeacherModal";
-
-const data = [
-  {
-    key: "1",
-    name: "Tushar",
-    email: "tushar@gmail.com",
-    contact: "01812038436999",
-    code: "435425",
-    totalStudent: "200",
-  },
-  {
-    key: "2",
-    name: "Rahman",
-    email: "rahman@gmail.com",
-    contact: "01812038436999",
-    code: "435425",
-    totalStudent: "200",
-  },
-  {
-    key: "3",
-    name: "Rafsan",
-    email: "rafsan@gmail.com",
-    contact: "01812038436999",
-    code: "435425",
-    totalStudent: "200",
-  },
-  {
-    key: "4",
-    name: "jusef",
-    email: "jusef@gmail.com",
-    contact: "01812038436999",
-    code: "435425",
-    totalStudent: "200",
-  },
-  {
-    key: "5",
-    name: "Asad",
-    email: "asad@gmail.com",
-    contact: "01812038436999",
-    code: "435425",
-    totalStudent: "200",
-  },
-  {
-    key: "6",
-    name: "Fahim",
-    email: "fahim@gmail.com",
-    contact: "01812038436999",
-    code: "435425",
-    totalStudent: "200",
-  },
-  {
-    key: "7",
-    name: "Nadir",
-    email: "nadir@gmail.com",
-    contact: "01812038436999",
-    code: "435425",
-    totalStudent: "200",
-  },
-  {
-    key: "8",
-    name: "Tushar",
-    email: "tushar@gmail.com",
-    contact: "01812038436999",
-    code: "435425",
-    totalStudent: "200",
-  },
-  {
-    key: "9",
-    name: "Rahman",
-    email: "rahman@gmail.com",
-    contact: "01812038436999",
-    code: "435425",
-    totalStudent: "200",
-  },
-  {
-    key: "10",
-    name: "Rafsan",
-    email: "rafsan@gmail.com",
-    contact: "01812038436999",
-    code: "435425",
-    totalStudent: "200",
-  },
-  {
-    key: "11",
-    name: "jusef",
-    email: "jusef@gmail.com",
-    contact: "01812038436999",
-    code: "435425",
-    totalStudent: "200",
-  },
-  {
-    key: "12",
-    name: "Asad",
-    email: "asad@gmail.com",
-    contact: "01812038436999",
-    code: "435425",
-    totalStudent: "200",
-  },
-  {
-    key: "13",
-    name: "Fahim",
-    email: "fahim@gmail.com",
-    contact: "01812038436999",
-    code: "435425",
-    totalStudent: "200",
-  },
-  {
-    key: "14",
-    name: "Nadir",
-    email: "nadir@gmail.com",
-    contact: "01812038436999",
-    code: "435425",
-    totalStudent: "200",
-  },
-  {
-    key: "15",
-    name: "Asad",
-    email: "asad@gmail.com",
-    contact: "01812038436999",
-    code: "435425",
-    totalStudent: "200",
-  },
-  {
-    key: "16",
-    name: "Fahim",
-    email: "fahim@gmail.com",
-    contact: "01812038436999",
-    code: "435425",
-    totalStudent: "200",
-  },
-  {
-    key: "17",
-    name: "Nadir",
-    email: "nadir@gmail.com",
-    contact: "01812038436999",
-    code: "435425",
-    totalStudent: "200",
-  },
-];
+import { useGetTeacherQuery } from "../../redux/slices/teacherSlice";
 
 const TotalTeacher = () => {
   const [openAddModel, setOpenAddModel] = useState(false);
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState(
-    new URLSearchParams(window.location.search).get("category") || "All"
-  );
-  const [page, setPage] = useState(
-    new URLSearchParams(window.location.search).get("page") || 1
-  );
+  const [page, setPage] = useState(new URLSearchParams(window.location.search).get("page") || 1);
+  const {data: teachers, refetch} = useGetTeacherQuery({search: search, page: page});
+  const itemsPerPage = 10; 
 
   const columns = [
     {
       title: "S.No",
       dataIndex: "key",
       key: "key",
+      render: (_, record, index)=>(
+        <p>{((page - 1) * itemsPerPage) + index + 1}</p>
+      )
     },
     {
       title: "Name",
@@ -179,8 +41,8 @@ const TotalTeacher = () => {
     },
     {
       title: "Code",
-      dataIndex: "code",
-      key: "code",
+      dataIndex: "password",
+      key: "password",
     },
 
     {
@@ -199,9 +61,6 @@ const TotalTeacher = () => {
 
   return (
     <div>
-      <div style={{ marginBottom: "16px" }}>
-        <BackButton link="/" />
-      </div>
       <div
         style={{
           background: "white",
@@ -265,9 +124,10 @@ const TotalTeacher = () => {
         <div>
           <Table
             columns={columns}
-            dataSource={data}
+            dataSource={teachers?.data}
             pagination={{
               pageSize: 10,
+              total: teachers?.pagination?.total,
               defaultCurrent: parseInt(page),
               onChange: handlePageChange,
             }}
@@ -275,6 +135,7 @@ const TotalTeacher = () => {
         </div>
 
         <TeacherModal
+          refetch={refetch}
           openAddModel={openAddModel}
           setOpenAddModel={setOpenAddModel}
         />

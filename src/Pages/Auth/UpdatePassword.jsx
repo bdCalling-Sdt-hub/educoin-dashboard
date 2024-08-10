@@ -1,27 +1,28 @@
 import { Button, Form, Input } from "antd";
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
+import React from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useResetPasswordMutation } from "../../redux/slices/authSlice";
+import toast from "react-hot-toast";
 
 const UpdatePassword = () => {
   const navigate = useNavigate();
-  const [newPassError, setNewPassError] = useState("");
-  const [conPassError, setConPassError] = useState("");
-  const [curPassError, setCurPassError] = useState("");
-  const [err, setErr] = useState("");
-  const onFinish = (values) => {
-    const { password, confirmPassword } = values;
-    Swal.fire({
-      title: "Successfully",
-      text: "Your password has been updated, please change your password regularly to avoid this happening",
-      showDenyButton: false,
-      showCancelButton: false,
-      confirmButtonText: "Confirm",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        navigate("/");
-      }
-    });
+  const [resetPassword, {isLoading}] = useResetPasswordMutation()
+  const {token} = useParams()
+
+  
+  const onFinish = async (values) => {
+    try {
+        await resetPassword({ data: values, token: token }).unwrap().then((result)=>{
+            if (result?.success) {
+                toast.success(result.message);
+                navigate("/login");
+            }
+        });
+        
+    } catch (error) {
+      console.log(error)
+        toast.error(error.data.message || "An unexpected server error occurred");
+    }
   };
 
   return (
@@ -80,7 +81,7 @@ const UpdatePassword = () => {
             New Password
           </label>
           <Form.Item
-            name="new_password"
+            name="newPassword"
             rules={[
               {
                 required: true,
@@ -101,11 +102,6 @@ const UpdatePassword = () => {
               }}
             />
           </Form.Item>
-          {newPassError && (
-            <label style={{ display: "block", color: "red" }} htmlFor="error">
-              {newPassError}
-            </label>
-          )}
         </div>
 
         <div style={{ marginBottom: "40px" }}>
@@ -117,7 +113,7 @@ const UpdatePassword = () => {
           </label>
           <Form.Item
             style={{ marginBottom: 0 }}
-            name="confirm_password"
+            name="confirmPassword"
             rules={[
               {
                 required: true,
@@ -137,11 +133,6 @@ const UpdatePassword = () => {
               }}
             />
           </Form.Item>
-          {conPassError && (
-            <label style={{ display: "block", color: "red" }} htmlFor="error">
-              {conPassError}
-            </label>
-          )}
         </div>
 
         <Form.Item>
@@ -159,7 +150,7 @@ const UpdatePassword = () => {
               marginTop: "",
             }}
           >
-            UPDATE
+            {isLoading ? "Loading" : "Save & Change"}
           </Button>
         </Form.Item>
       </Form>

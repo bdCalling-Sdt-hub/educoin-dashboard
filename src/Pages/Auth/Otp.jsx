@@ -1,29 +1,44 @@
 import { Button, Form, Input } from "antd";
 import React, { useState } from "react";
+import toast from "react-hot-toast";
 import OTPInput from "react-otp-input";
-import { useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
+import { useNavigate, useParams } from "react-router-dom";
+import { useEmailVerifyMutation, useForgotPasswordMutation } from "../../redux/slices/authSlice";
 
 const Otp = () => {
   const navigate = useNavigate();
   const [otp, setOtp] = useState("");
-  const [err, setErr] = useState("");
+  const { email } = useParams()
+  const [emailVerify, {isLoading}] = useEmailVerifyMutation()
+  const [forgotPassword,] = useForgotPasswordMutation()
 
-  const handleResendEmail = () => {
-    const email = JSON.parse(localStorage.getItem("email"));
+  const handleResendEmail = async () => {
+    try {
+        await forgotPassword({ email: email  }).unwrap().then((result)=>{
+            if (result?.success) {
+                toast.success(result.message);
+                setOtp("")
+            }
+        });
+        
+    } catch (error) {
+        toast.error(error.data.message || "An unexpected server error occurred");
+    }
   };
-  const handleVerifyOtp = () => {
-    Swal.fire({
-      title: "Password Reset",
-      text: "Your password has been successfully reset. click confirm to set a new password",
-      showDenyButton: false,
-      showCancelButton: false,
-      confirmButtonText: "Confirm",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        navigate("/update-password");
-      }
-    });
+
+  const handleVerifyOtp = async () => {
+    try {
+        await emailVerify({ email: email, oneTimeCode: Number(otp) }).unwrap().then((result)=>{
+            if (result?.success) {
+              console.log(result)
+                toast.success(result.message);
+                navigate(`/update-password/${result.data}`);
+            }
+        });
+        
+    } catch (error) {
+        toast.error(error.data.message || "An unexpected server error occurred");
+    }
   };
 
   return (
@@ -73,7 +88,7 @@ const Otp = () => {
           <OTPInput
             value={otp}
             onChange={setOtp}
-            numInputs={6}
+            numInputs={4}
             inputStyle={{
               height: "44px",
               width: "44px",
@@ -103,7 +118,7 @@ const Otp = () => {
             marginBottom: "20px",
           }}
         >
-          Verify
+          {isLoading ? "Verifing" : "Verify"}
         </Button>
         <p
           style={{

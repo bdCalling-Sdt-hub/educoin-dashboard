@@ -1,18 +1,34 @@
 import JoditEditor from "jodit-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRef } from "react";
+import {  useGetTermsQuery, useUpdateTermsMutation } from "../../redux/slices/ruleSlice";
+import toast from "react-hot-toast";
 
 const TermsCondition = () => {
   const editor = useRef(null);
   const [content, setContent] = useState("");
-  const [isLoading, seLoading] = useState(false);
-  const config = {
-    readonly: false,
-    placeholder: "Start typings...",
-    style: {
-      height: 400,
-    },
+  const {data: terms} = useGetTermsQuery({})
+  const [updateTerms] = useUpdateTermsMutation()
+
+  useEffect(() => {
+    setContent(terms?.data?.content);
+  }, [terms?.data?.content]);
+
+  const handleSubmit = async () => {
+    try {
+      await updateTerms({ content: content }).unwrap().then((result)=>{
+        console.log(result)
+          if (result?.success == true) {
+              toast.success(result?.message);
+          }
+      });
+      
+  } catch (error) {
+      toast.error(error.data.message || "An unexpected server error occurred");
+  }
   };
+
+
   return (
     <div
       style={{
@@ -39,14 +55,11 @@ const TermsCondition = () => {
         <JoditEditor
           ref={editor}
           value={content}
-          config={config}
-          tabIndex={1}
           onBlur={(newContent) => setContent(newContent)}
-          // onChange={newContent => { }}
         />
       </div>
       <button
-        disabled={isLoading}
+        onClick={handleSubmit}
         className="rounded-lg"
         style={{
           display: "block",
