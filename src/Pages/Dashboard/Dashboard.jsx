@@ -86,12 +86,8 @@ const Dashboard = () => {
           }}
         >
           <Link to="/">
-            <img src={Logo} height="45px" width="50px" />
+            <img src={Logo} height="45px" width="150px" />
           </Link>
-
-          <div>
-            <img src={LogoText} />
-          </div>
         </div>
 
         <ul
